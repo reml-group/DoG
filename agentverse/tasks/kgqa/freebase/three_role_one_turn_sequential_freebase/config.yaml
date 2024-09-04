@@ -1,0 +1,98 @@
+prompts:
+  prompt: &prompt |
+    The triple [e, r, e'] describes a fact, used to answer a sub-question of a multi-hop problem, resulting in a smaller question containing the answer entity (e or e') which is not in the original question. 
+    The formal process of this type of task is:
+      Given an N-hop problem Q_N:
+      The N-hop problem contains a core entity e_target and a relationship r_target related to e_target, which constitutes a subproblem, namely (e_target, r_target,?). The meaning of this subproblem is to find the entity that has relationship r_target with entity e_target.
+      There are also triples (e_target, r_target, e_ans) or (e_ans, r_target, e_target), containing the facts and answer entity e_ans that can answer this sub-question.
+      The process of simplifying the problem is to use the information of known triples to answer the sub-questions related to the core entity in the N-hop problem, and obtain the N-1-hop problem. The answer entity will serve as the core entity of the new N-1-hop problem.
+    For exmaple:
+        Q_N: what were the release years of the films written by [Pierre Geller]?
+        K: ['(Rebellion,written_by,Pierre Geller)']
+        Q_N-1: What were the release year of the film [Rebellion]?
+
+    Here is your task:
+    [N-hop question]
+    ${source_text}
+    [known information]
+    ${compared_text_one}
+    Here's your discussion history:
+    ${chat_history}
+    ${role_description}
+    ${final_prompt}
+
+environment:
+  env_type: llm_eval
+  max_turns: 3
+  rule:
+    order:
+      type: sequential
+    visibility:
+      type: all
+    selector:
+      type: basic
+    updater:
+      type: basic
+    describer:
+      type: basic
+
+agents:
+  -
+    agent_type: llm_eval_multi
+    name: Question Simplifying Expert
+    final_prompt_to_use: |-
+
+    role_description: |
+      You are an expert in problem simplification. What you are good at doing is answering sub-questions of the original N-hop problem(Q_N) based on known information(K), thereby obtaining new problems(Q_N-1) that need to be solved.
+    memory:
+      memory_type: chat_history
+    memory_manipulator:
+      memory_manipulator_type: basic
+    prompt_template: *prompt
+    llm:
+      model: "gpt-3.5-turbo-0125"
+      llm_type: gpt-3.5-turbo
+      temperature: 0
+      max_tokens: 512
+  -
+    agent_type: llm_eval_multi
+    name: Critic
+    final_prompt_to_use: |-
+
+    role_description: |
+      You are a serious critic, please note: you need to compare [N-hop Question] and the [simplified_question] obtained from the discussion in the chat history to see if they are the same. If they are the same, it means that the previous expert problem simplification failed and the task was not completed. You need to point this error out. and give the answer you think is correct. Make sure that the simplified question includes e_known.
+      Double check error cases where simplification was not successful !!
+    memory:
+      memory_type: chat_history
+    memory_manipulator:
+      memory_manipulator_type: basic
+    prompt_template: *prompt
+    llm:
+      model: "gpt-3.5-turbo-0125"
+      llm_type: gpt-3.5-turbo
+      temperature: 0
+      max_tokens: 512
+  -
+    agent_type: llm_eval_multi
+    name: Linguist
+    final_prompt_to_use: |-
+      You just need to output the correct simplified problem. Please be careful not to print the original question or duplicate a new question. The format of your output must be "simplified question:...."
+    role_description: |      
+      You are a linguist who is particularly good at dealing with irrelevant information in simplified problems. Regarding the simplified problems output by collaborators in the chat log, if the simplification is incomplete, please provide a reasonable simplified solution. In order to do your job better, learn how to avoid the mistakes of incomplete simplification.
+      Specifically, you need to make sure that there are no e_target and r_target in the simplified problem Q_N-1, only e_known.
+      Ensure that redundant entities and relationships do not reappear in the simplified problem !!
+      That is, remove the attributive modification of known entities! 
+    memory:
+      memory_type: chat_history
+    memory_manipulator:
+      memory_manipulator_type: basic
+    prompt_template: *prompt
+    llm:
+      model: "gpt-3.5-turbo-0125"
+      llm_type: gpt-3.5-turbo
+      temperature: 0
+      max_tokens: 512
+
+tools: ~
+
+
