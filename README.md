@@ -4,7 +4,7 @@
 
 ![DoG framework](images/figure-1.png)
 
-## :mag_right:Project Struct
+## :mag_right:Project Structure
 
 ```bash
 ├─agentverse
