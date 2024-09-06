@@ -122,7 +122,7 @@ This repository builds the multi-agent debate team based on the following paper 
 
 Thanks for their nice contribution.
 
-## Citation
+## :bookmark_tabs: Citation
 
 ```bibtex
 @article{dog2024,
