@@ -122,3 +122,14 @@ This repository builds the multi-agent debate team based on the following paper 
 
 Thanks for their nice contribution.
 
+## Citation
+
+```bibtex
+@article{dog2024,
+  title={Debate on Graph: a Flexible and Reliable Reasoning Framework for Large Language Models},
+  author={Jie Ma, Zhitao Gao, Qi Chai, Wangchun Sun, Pinghui Wang, Hongbin Pei, Jing Tao, Lingyun Song, Jun Liu, Chen Zhang, and Lizhen Cui},
+  journal={arXiv preprint arXiv:2409.03155},
+  year={2024}
+}
+
+
