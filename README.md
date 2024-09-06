@@ -4,7 +4,7 @@
 
 ![DoG framework](images/figure-1.png)
 
-## :mag_right:Project Structure
+## :mag_right: Project Structure
 
 ```bash
 ├─agentverse
@@ -40,7 +40,7 @@
 └─requirements.txt
 ```
 
-## 🚀Getting Started
+## 🚀 Getting Started
 
 ### 0. Requirements
 
@@ -114,7 +114,7 @@ python main_webquestions.py --task "kgqa/freebase/three_role_one_turn_sequential
 
 Feel free to modify the YAML files under `agentverse\tasks\kgqa\freebase ` to change the strategy for **Question Simplifying**. We provide basic prompt and encourage exploring more interesting and efficient debate strategies.
 
-## :heart:Acknowledgments
+## :heart: Acknowledgments
 
 This repository builds the multi-agent debate team based on the following paper and code:
 
